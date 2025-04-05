@@ -48,11 +48,6 @@ export const Signup = async (req, res) => {
 };
 
 // ✅ تسجيل الدخول
-import bcrypt from 'bcryptjs';
-import User from '../models/user.model.js';
-import { generateToken } from '../utils/token.js'; // افترض أن لديك ملف لتوليد التوكن
-import { translate } from '../utils/translate.js'; // افترض أنك تستخدم وظيفة للترجمة
-
 export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
