@@ -89,16 +89,30 @@ export const Logout = (req, res) => {
 };
 
 // ✅ تحديث الصورة الشخصية
+// ✅ تحديث الصورة الشخصية
 export const UpdateProfile = async (req, res) => {
     try {
         const { profilePic } = req.body;
         const userId = req.user._id;
 
+        // التحقق من وجود الصورة
         if (!profilePic) {
             return res.status(400).json({ message: translate(req, "Profile pic is required") });
         }
 
-        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        // التحقق من نوع الصورة (إضافة فحص بسيط)
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const imageMimeType = profilePic.split(';')[0]; // الحصول على النوع
+        if (!validImageTypes.includes(imageMimeType)) {
+            return res.status(400).json({ message: translate(req, "Invalid image format. Please upload a jpg, jpeg, or png image.") });
+        }
+
+        // رفع الصورة إلى Cloudinary
+        const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+            folder: 'user_profile_pics', // تحديد المجلد لتخزين الصور في Cloudinary
+        });
+
+        // تحديث صورة المستخدم في قاعدة البيانات
         const updatedUser = await User.findByIdAndUpdate(userId, { profilePic: uploadResponse.secure_url }, { new: true });
 
         res.status(200).json(updatedUser);
@@ -115,11 +129,24 @@ export const EditName = async (req, res) => {
         const { fullName } = req.body;
         const userId = req.user._id;
 
+        // التحقق من وجود الاسم الكامل
         if (!fullName) {
             return res.status(400).json({ message: translate(req, "Full name is required") });
         }
 
+        // التأكد أن الاسم الكامل يحتوي على أكثر من حرفين (على سبيل المثال)
+        if (fullName.length < 3) {
+            return res.status(400).json({ message: translate(req, "Full name must be at least 3 characters long") });
+        }
+
+        // التحقق من أن المستخدم الذي يحاول التعديل هو نفس المستخدم الذي يملك التوكن
+        if (userId !== req.user._id) {
+            return res.status(403).json({ message: translate(req, "You are not authorized to update this profile") });
+        }
+
+        // تحديث الاسم الكامل للمستخدم في قاعدة البيانات
         const updatedUser = await User.findByIdAndUpdate(userId, { fullName }, { new: true });
+
         res.status(200).json(updatedUser);
 
     } catch (error) {
