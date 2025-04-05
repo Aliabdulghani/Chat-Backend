@@ -43,7 +43,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'https://aliabdulghani.github.io/Chat-App/',
+    origin: 'https://aliabdulghani.github.io/Chat-App',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
 );
