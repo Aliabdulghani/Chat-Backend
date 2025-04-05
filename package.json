@@ -1,0 +1,35 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cloudinary": "^1.29.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.1",
+    "i18next": "^24.2.3",
+    "i18next-express-middleware": "^2.0.0",
+    "i18next-fs-backend": "^2.6.0",
+    "i18next-http-backend": "^3.0.2",
+    "i18next-http-middleware": "^3.7.1",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.10",
+    "nodemon": "^2.0.12",
+    "path": "^0.12.7",
+    "socket.io": "^4.8.1",
+    "stripe": "^8.218.0"
+  }
+}
