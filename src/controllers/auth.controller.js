@@ -2,6 +2,7 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import cloudinary from "../lib/cloudinary.js";
+import jwt from "jsonwebtoken";
 
 // ✅ دالة مساعدة تضمن استدعاء آمن لـ req.t()
 const translate = (req, key, fallback) => (req.t ? req.t(key) : fallback || key);
@@ -139,7 +140,7 @@ export const checkAuth = async (req, res) => {
         const token = authHeader.split(" ")[1];
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.userId).select("-password");
+        const user = await User.findById(decoded.id).select("-password");  // تأكد من استخدام `decoded.id`
 
         if (!user) {
             return res.status(404).json({ message: translate(req, "User not found") });
