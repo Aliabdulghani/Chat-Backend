@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import User from '../models/user.model.js';
-import jwt from 'jsonwebtoken';
+
 
 export const protectRoute = asyncHandler(async (req, res, next) => {
     const authHeader = req.headers.authorization;
