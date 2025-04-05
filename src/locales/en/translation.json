@@ -1,0 +1,23 @@
+{
+    "All fields are required": "All fields are required",
+    "Number Phone must be at least 7 Numbers": "Number Phone must be at least 7 Numbers",
+    "Password must be at least 6 characters": "Password must be at least 6 characters",
+    "Email already exists": "Email already exists",
+    "Invalid user data": "Invalid user data",
+    "Error in Signup Controller": "Error in Signup Controller",
+    "Internal Server Error": "Internal Server Error",
+    "Invalid credentials": "Invalid credentials",
+    "Error in login controller": "Error in login controller",
+    "Logged out successfully": "Logged out successfully",
+    "Error in logout controller": "Error in logout controller",
+    "Profile pic is required": "Profile pic is required",
+    "error in update profile:": "error in update profile:",
+    "Internal server error": "Internal server error",
+    "Full name is required": "Full name is required",
+    "error in edit name:": "error in edit name:",
+    "Error in checkAuth controller": "Error in checkAuth controller",
+    "Error in getUsersForSidebar: ": "Error in getUsersForSidebar: ",
+    "Error in getMessages controller: ": "Error in getMessages controller: ",
+    "Error in sendMessage controller: ": "Error in sendMessage controller: ",
+    "welcome": "Welcome"
+}

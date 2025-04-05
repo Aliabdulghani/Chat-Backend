@@ -1,0 +1,23 @@
+{
+    "All fields are required": "جميع الحقول مطلوبة",
+    "Number Phone must be at least 7 Numbers": "رقم الهاتف يجب أن لا يقل عن 7 أرقام",
+    "Password must be at least 6 characters": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+    "Email already exists": "البريد الإلكتروني موجود بالفعل",
+    "Invalid user data": "بيانات المستخدم غير صالحة",
+    "Error in Signup Controller": "خطأ في الادخال",
+    "Internal Server Error": "خطأ في الخادم الداخلي",
+    "Invalid credentials": "بيانات غير صالحة",
+    "Error in login controller": "خطأ في تسجيل الدخول",
+    "Logged out successfully": "تم تسجيل الخروج بنجاح",
+    "Error in logout controller": "خطأ في تسجيل الخروج",
+    "Profile pic is required": "صورة الملف الشخصي مطلوبة",
+    "error in update profile:": "خطأ في تحديث الملف الشخصي:",
+    "Internal server error": "خطأ في الخادم الداخلي",
+    "Full name is required": "الاسم الكامل مطلوب",
+    "error in edit name:": "خطأ في تعديل الاسم:",
+    "Error in checkAuth controller": "خطأ في وحدة تحكم ",
+    "Error in getUsersForSidebar: ": "خطأ في الحصول على المستخدمين للشريط الجانبي: ",
+    "Error in getMessages controller: ": "خطأ في الحصول على الرسائل:",
+    "Error in sendMessage controller: ": "خطأ في الحصول على الرسائل: ",
+    "welcome": "مرحبا"
+}
