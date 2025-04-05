@@ -1,41 +1,27 @@
-import User from "../models/user.model.js";
-import jwt from "jsonwebtoken";
-import asyncHandler from "express-async-handler";
+import jwt from 'jsonwebtoken';
+import asyncHandler from 'express-async-handler';
+import User from '../models/user.model.js';
 
 export const protectRoute = asyncHandler(async (req, res, next) => {
-    let token;
-    
-    // التحقق من وجود التوكن في الهيدر
-    if (req?.headers?.authorization && req.headers.authorization.includes("Bearer ")) {
-        token = req.headers.authorization.split(" ")[1];
-        
-        try {
-            // التحقق من صحة التوكن
-            if (token) {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                
-                // العثور على المستخدم باستخدام الـ ID من التوكن
-                const user = await User.findById(decoded?.id);
-                
-                // التحقق من وجود المستخدم
-                if (!user) {
-                    throw new Error("User not found");
-                }
+    const authHeader = req.headers.authorization;
 
-                req.user = user; // إضافة المستخدم إلى الطلب
-                next(); // المتابعة إلى المسار التالي
-            } else {
-                throw new Error("Token is missing");
-            }
-        } catch (error) {
-            // التعامل مع الأخطاء بشكل منظم
-            res.status(401).json({
-                message: error.message || "Not Authorized. Token may be expired, please log in again."
-            });
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        res.status(401);
+        throw new Error('No token provided');
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = await User.findById(decoded.id).select('-password');
+        if (!req.user) {
+            res.status(401);
+            throw new Error('User not found');
         }
-    } else {
-        res.status(401).json({
-            message: "No token provided, authorization denied"
-        });
+        next();
+    } catch (error) {
+        res.status(401);
+        throw new Error('Invalid or expired token');
     }
 });

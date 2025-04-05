@@ -11,38 +11,33 @@ export const Signup = async (req, res) => {
     try {
         const { fullName, email, password, numberPhone } = req.body;
 
-        if (!fullName || !email || !password || !numberPhone) {
-            return res.status(400).json({ message: translate(req, "All fields are required") });
-        }
-
-        if (numberPhone.length < 7) {
-            return res.status(400).json({ message: translate(req, "Number Phone must be at least 7 Numbers") });
-        }
-        if (password.length < 6) {
-            return res.status(400).json({ message: translate(req, "Password must be at least 6 characters") });
-        }
-
-        if (await User.findOne({ email })) {
-            return res.status(400).json({ message: translate(req, "Email already exists") });
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ message: translate(req, "User already exists") });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({ fullName, email, numberPhone, password: hashedPassword });
-        await newUser.save();
-
-        generateToken(newUser._id, res);
-
-        res.status(201).json({
-            _id: newUser._id,
+        const user = await User.create({
             fullName,
             email,
-            numberPhone,
-            profilePic: newUser.profilePic,
+            password: hashedPassword,
+            numberPhone
         });
 
+        const token = generateToken(user._id);
+
+        res.status(201).json({
+            token,
+            user: {
+                _id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                numberPhone: user.numberPhone,
+            }
+        });
     } catch (error) {
-        console.error("❌ Error in Signup Controller:", error);
+        console.error('❌ Error in Register Controller:', error);
         res.status(500).json({ message: translate(req, "Internal Server Error") });
     }
 };
@@ -52,29 +47,33 @@ export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        if (!email || !password) {
+            return res.status(400).json({ message: translate(req, "Email and password are required") });
+        }
+
         const user = await User.findOne({ email });
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(400).json({ message: translate(req, "Invalid credentials") });
         }
 
-        const token = generateToken(user._id); // ✅ نحصل على التوكن
+        const token = generateToken(user._id);
 
         res.status(200).json({
-            token, // ✅ نرسله في الرد
+            token,
             user: {
                 _id: user._id,
                 fullName: user.fullName,
-                numberPhone: user.numberPhone,
                 email: user.email,
-                profilePic: user.profilePic,
+                numberPhone: user.numberPhone,
+                profilePic: user.profilePic
             }
         });
-
     } catch (error) {
         console.error("❌ Error in Login Controller:", error);
         res.status(500).json({ message: translate(req, "Internal Server Error") });
     }
 };
+
 
 
 // ✅ تسجيل الخروج
