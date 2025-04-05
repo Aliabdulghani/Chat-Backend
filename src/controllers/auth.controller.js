@@ -129,11 +129,27 @@ export const EditName = async (req, res) => {
 };
 
 // ✅ التحقق من تسجيل الدخول
-export const checkAuth = (req, res) => {
+export const checkAuth = async (req, res) => {
     try {
-        res.status(200).json(req.user);
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: translate(req, "No token provided") });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ message: translate(req, "User not found") });
+        }
+
+        res.status(200).json(user);
+
     } catch (error) {
         console.error("❌ Error in CheckAuth Controller:", error);
-        res.status(500).json({ message: translate(req, "Internal Server Error") });
+        res.status(401).json({ message: translate(req, "Invalid or expired token") });
     }
 };
