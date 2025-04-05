@@ -2,7 +2,7 @@ import  User  from "../models/user.model.js";
 import jwt  from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 
-export const authMiddleware = asyncHandler(async (req, res, next) => {
+export const protectRoute = asyncHandler(async (req, res, next) => {
     let token;
     if (req?.headers?.authorization?.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1];
