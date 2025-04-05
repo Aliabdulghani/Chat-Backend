@@ -52,31 +52,15 @@ export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // تحقق من وجود البريد الإلكتروني وكلمة المرور في الجسم
-        if (!email || !password) {
-            return res.status(400).json({ message: translate(req, "Email and password are required") });
-        }
-
-        // البحث عن المستخدم باستخدام البريد الإلكتروني
         const user = await User.findOne({ email });
-
-        if (!user) {
-            // إذا لم يتم العثور على المستخدم، لا تقدم تفاصيل إضافية للتهديدات الأمنية
+        if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(400).json({ message: translate(req, "Invalid credentials") });
         }
 
-        // التحقق من كلمة المرور
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
-        if (!isPasswordCorrect) {
-            return res.status(400).json({ message: translate(req, "Invalid credentials") });
-        }
+        const token = generateToken(user._id); // ✅ نحصل على التوكن
 
-        // توليد التوكن
-        const token = generateToken(user._id);
-
-        // إرسال التوكن والمعلومات الضرورية للمستخدم
         res.status(200).json({
-            token,
+            token, // ✅ نرسله في الرد
             user: {
                 _id: user._id,
                 fullName: user.fullName,
@@ -87,12 +71,10 @@ export const Login = async (req, res) => {
         });
 
     } catch (error) {
-        // تسجيل الخطأ
         console.error("❌ Error in Login Controller:", error);
         res.status(500).json({ message: translate(req, "Internal Server Error") });
     }
 };
-
 
 
 // ✅ تسجيل الخروج
@@ -149,17 +131,9 @@ export const EditName = async (req, res) => {
 // ✅ التحقق من تسجيل الدخول
 export const checkAuth = (req, res) => {
     try {
-        // التحقق من وجود المستخدم في الطلب
-        if (!req.user) {
-            return res.status(401).json({ message: translate(req, "User not authenticated") });
-        }
-
-        // إرسال بيانات المستخدم
         res.status(200).json(req.user);
     } catch (error) {
-        // تسجيل الخطأ
         console.error("❌ Error in CheckAuth Controller:", error);
         res.status(500).json({ message: translate(req, "Internal Server Error") });
     }
 };
-
