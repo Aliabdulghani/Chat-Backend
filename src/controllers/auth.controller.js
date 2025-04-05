@@ -57,14 +57,17 @@ export const Login = async (req, res) => {
             return res.status(400).json({ message: translate(req, "Invalid credentials") });
         }
 
-        generateToken(user._id, res);
+        const token = generateToken(user._id); // ✅ نحصل على التوكن
 
         res.status(200).json({
-            _id: user._id,
-            fullName: user.fullName,
-            numberPhone: user.numberPhone,
-            email: user.email,
-            profilePic: user.profilePic,
+            token, // ✅ نرسله في الرد
+            user: {
+                _id: user._id,
+                fullName: user.fullName,
+                numberPhone: user.numberPhone,
+                email: user.email,
+                profilePic: user.profilePic,
+            }
         });
 
     } catch (error) {
@@ -72,6 +75,7 @@ export const Login = async (req, res) => {
         res.status(500).json({ message: translate(req, "Internal Server Error") });
     }
 };
+
 
 // ✅ تسجيل الخروج
 export const Logout = (req, res) => {

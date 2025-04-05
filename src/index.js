@@ -44,8 +44,6 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: "https://aliabdulghani.github.io",
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
 );
