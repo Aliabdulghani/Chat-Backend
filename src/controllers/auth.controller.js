@@ -12,22 +12,43 @@ export const Signup = async (req, res) => {
     try {
         const { fullName, email, password, numberPhone } = req.body;
 
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: translate(req, "User already exists") });
+        // تحقق من وجود جميع الحقول المطلوبة
+        if (!fullName || !email || !password || !numberPhone) {
+            return res.status(400).json({
+                message: translate(req, "All fields are required"),
+            });
         }
 
+        // تحقق من وجود المستخدم مسبقًا
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({
+                message: translate(req, "User already exists"),
+            });
+        }
+        // تحقق من وجود رقم الجوال مسبقًا 
+        const checkPhone = await User.findOne({ numberPhone });
+        if (checkPhone) {
+            return res.status(400).json({
+                message: translate(req, "numberPhone already exists"),
+            });
+        }
+
+        // تشفير كلمة المرور
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // إنشاء المستخدم الجديد
         const user = await User.create({
             fullName,
             email,
             password: hashedPassword,
-            numberPhone
+            numberPhone,
         });
 
+        // إنشاء التوكن
         const token = generateToken(user._id);
 
+        // إرجاع البيانات
         res.status(201).json({
             token,
             user: {
@@ -35,13 +56,17 @@ export const Signup = async (req, res) => {
                 fullName: user.fullName,
                 email: user.email,
                 numberPhone: user.numberPhone,
-            }
+                profilePic: user.profilePic || null,
+            },
         });
     } catch (error) {
-        console.error('❌ Error in Register Controller:', error);
-        res.status(500).json({ message: translate(req, "Internal Server Error") });
+        console.error("❌ Error in Signup Controller:", error.message);
+        res.status(500).json({
+            message: translate(req, "Internal Server Error"),
+        });
     }
 };
+
 
 // ✅ تسجيل الدخول
 export const Login = async (req, res) => {
