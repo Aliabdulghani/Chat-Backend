@@ -43,7 +43,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "*",
+    origin: "https://aliabdulghani.github.io",
     credentials: true,
   })
 );
