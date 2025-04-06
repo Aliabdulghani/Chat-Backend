@@ -8,8 +8,8 @@ router.post("/signup", Signup);
 router.post("/login", Login);
 router.post("/logout", Logout);
 
-router.put("/update-Profile", UpdateProfile);
-router.put("/update-name", EditName);
+router.put("/update-Profile", protectRoute, UpdateProfile);
+router.put("/update-name", protectRoute, EditName);
 
 router.get("/check", checkAuth);
 
