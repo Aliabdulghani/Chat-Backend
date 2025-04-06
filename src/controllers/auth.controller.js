@@ -101,12 +101,6 @@ export const UpdateProfile = async (req, res) => {
             return res.status(400).json({ message: translate(req, "Profile pic is required") });
         }
 
-        const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        const imageMimeType = profilePic.split(';')[0];
-        if (!validImageTypes.includes(imageMimeType)) {
-            return res.status(400).json({ message: translate(req, "Invalid image format. Please upload a jpg, jpeg, or png image.") });
-        }
-
         const uploadResponse = await cloudinary.uploader.upload(profilePic, { folder: 'user_profile_pics' });
         const updatedUser = await User.findByIdAndUpdate(userId, { profilePic: uploadResponse.secure_url }, { new: true });
 
