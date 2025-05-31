@@ -12,52 +12,76 @@ import Backend from 'i18next-fs-backend';
 import middleware from 'i18next-http-middleware';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { error } from 'console';
 
-// تحديد __filename و __dirname في بداية الملف
+// تحديد __filename و __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// تهيئة i18next مع Backend
+// تهيئة i18next
 i18next
   .use(Backend)
-  .use(middleware.LanguageDetector) // اكتشاف اللغة
+  .use(middleware.LanguageDetector)
   .init({
     fallbackLng: 'en',
     supportedLngs: ['en', 'ar'],
     backend: {
-      loadPath: path.join(__dirname, './locales/{{lng}}/translation.json'), // تحديد مسار ملفات الترجمة
+      loadPath: path.join(__dirname, './locales/{{lng}}/translation.json'),
     },
     detection: {
-      order: ['header', 'querystring', 'cookie'], // اكتشاف اللغة من الـ headers أو الـ cookies
-      caches: ['cookie'],  // تخزين اللغة في الكوكيز
+      order: ['header', 'querystring', 'cookie'],
+      caches: ['cookie'],
     },
   });
 
-// تفعيل i18next مع Express
 app.use(middleware.handle(i18next));
 
 dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: "https://aliabdulghani.github.io",
-    credentials: true,
-  })
-);
 
+const allowedOrigins = [
+  'https://aliabdulghani.github.io',
+  'http://localhost:8081',
+  'http://localhost:19006',
+  /\.yourdomain\.com$/,
+  'exp://192.168.*.*:19000' 
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // السماح بطلبات بدون origin (مثل mobile apps)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return origin === allowedOrigin;
+      } else if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    })) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 
-// إذا كان في وضع الإنتاج، يمكنك فك التعليق عن الكود التالي لتقديم الـ frontend
-// if (process.env.NODE_ENV === 'production') {
-//   app.use(express.static(path.join(__dirname, '../frontend/dist')));
-//   app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, '../frontend', 'dist', 'index.html'));
-//   });
-// }
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'dist', 'index.html'));
+  });
+}
 
 const port = process.env.PORT || 5000;
 
@@ -66,7 +90,7 @@ server.listen(port, async () => {
   try {
     await connectDB();
     console.log('Database connected successfully');
-  } catch (dbError) {
+  } catch (error) {
     console.error('Error connecting to database:', error);
     process.exit(1);
   }
