@@ -40,36 +40,27 @@ dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = [
-  'https://aliabdulghani.github.io',
-  'http://localhost:8081',
-  'http://localhost:19006',
-  /\.yourdomain\.com$/,
-  'exp://192.168.*.*:19000' 
-];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // السماح بطلبات بدون origin (مثل mobile apps)
-    if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'http://localhost:8081',
+      'http://localhost:19006',
+      'exp://192.168.1.*:19000' // استبدل * برقم IP جهازك
+    ];
 
-    if (allowedOrigins.some(allowedOrigin => {
-      if (typeof allowedOrigin === 'string') {
-        return origin === allowedOrigin;
-      } else if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
-      }
-      return false;
-    })) {
-      return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      return callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization'], // أضف هنا
+  methods: ['GET', 'POST', 'PUT', 'DELETE'] // أضف هذا
+};
+
+app.use(cors(corsOptions));;
 
 // Routes
 app.use('/api/auth', authRoutes);
