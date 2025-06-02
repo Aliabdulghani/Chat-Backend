@@ -41,8 +41,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowedOrigins = [
-  'https://aliabdulghani.github.io',
   'http://localhost:8081',
+  'https://aliabdulghani.github.io',
   'http://localhost:19006',
   /\.yourdomain\.com$/,
   'exp://192.168.*.*:19000' 
